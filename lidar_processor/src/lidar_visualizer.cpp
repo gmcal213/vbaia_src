@@ -35,6 +35,9 @@ class LidarVisualizer : public rclcpp::Node
 
             //initialize call count
             callCount = 1;
+
+            //send info to logger
+            RCLCPP_INFO(this->get_logger(), "Visualizing Point cloud at topic %s", this->get_parameter("topic_name").get_parameter_value().get<std::string>());
             
         }
 
@@ -42,12 +45,7 @@ class LidarVisualizer : public rclcpp::Node
         //function to receive point cloud data and convert to pcl format, display it
         void processPCD(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
         {   
-            //send info to logger
-            RCLCPP_INFO(this->get_logger(), "PointCloud Received");
 
-            //initialize point cloud pointer
-            //pcl::PointCloud<pcl::PointXYZI>::Ptr pointCloud = 
-            //    boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
             //convert from ros message to pcl point cloud
             pcl::fromROSMsg(*msg, *pointCloud);
             
@@ -66,8 +64,6 @@ class LidarVisualizer : public rclcpp::Node
             }
             else
             {
-                //send info to logger
-                RCLCPP_INFO(this->get_logger(), "Updating Visualizer");
                 //update exisiting point cloud
                 viewer->updatePointCloud<pcl::PointXYZI> (pointCloud, "point cloud");
             }

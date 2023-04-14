@@ -38,24 +38,23 @@ class LidarConcatenator : public rclcpp::Node
             //initialize point cloud 
             pointCloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
 
+            //send info to logger
+            RCLCPP_INFO(this->get_logger(), "Concatenating %d point clouds", this->get_parameter("num_point_clouds").get_parameter_value().get<int>());
+            RCLCPP_INFO(this->get_logger(), "Concatenating point clouds from livox/lidar and publishing to lidar/concatenated");
+
         }
 
     private:
         //function to receive point cloud data and convert to pcl format, display it
         void concatPCD(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
         {   
-            //send info to logger
-            RCLCPP_INFO(this->get_logger(), "PointCloud Received");
 
-            //initialize point cloud pointer
-            //pcl::PointCloud<pcl::PointXYZI>::Ptr pointCloud = 
-            //    boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
+            
             //convert from ros message to pcl point cloud
             pcl::fromROSMsg(*msg, *pointCloud);
 
             if(count == this->get_parameter("num_point_clouds").get_parameter_value().get<int>())
             {   
-                //RCLCPP_INFO(this->get_logger(), "Concatenation initiated");
                 //create concatenated point cloud
                 cloudConcat = *pointCloud;
 
@@ -64,8 +63,7 @@ class LidarConcatenator : public rclcpp::Node
             }
             else if(count > 0 && count < this->get_parameter("num_point_clouds").get_parameter_value().get<int>())
             {
-                //RCLCPP_INFO(this->get_logger(), "Concatenating points");
-
+                //concatnate point cloud
                 cloudConcat += *pointCloud;
 
                 //decrement counter
@@ -74,10 +72,9 @@ class LidarConcatenator : public rclcpp::Node
             }
             else
             {
-                RCLCPP_INFO(this->get_logger(), "Publishing point cloud");   
+
                 //publish concatenated point cloud data to a new topic
                 pcl::toROSMsg(cloudConcat, cloudConcatROS);
-
                 publisher_->publish(cloudConcatROS);
 
                 //clearing point cloud

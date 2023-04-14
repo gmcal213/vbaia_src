@@ -28,11 +28,13 @@ public:
         subscriber_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
             "/hitch_angle", 10, std::bind(&LidarStats::topic_callback, this, std::placeholders::_1), options
         );
+
+        RCLCPP_INFO(this->get_logger(), "Publishing lidar statistics to lidar_stats");
     }
 private:
     void topic_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
     {
-        RCLCPP_INFO(this->get_logger(), "PointCloud Received");
+        
     }
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr subscriber_;
 

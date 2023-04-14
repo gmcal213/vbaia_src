@@ -50,35 +50,25 @@ class LidarFilterer : public rclcpp::Node
             //initialize filtered point cloud pointer
             cloud_filtered =  boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
 
+            //send info to logger
+            RCLCPP_INFO(this->get_logger(), "Filtering point clouds from lidar/concatenated and publishing to concatenated/filtered");
+
         }
 
     private:
         //function to receive point cloud data and convert to pcl format, display it
         void filterPCD(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
         {   
-            //send info to logger
-            RCLCPP_INFO(this->get_logger(), "PointCloud Received");
-
-            //initialize point cloud pointer
-            //pcl::PointCloud<pcl::PointXYZI>::Ptr pointCloud = 
-            //    boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
+            
             //convert from ros message to pcl point cloud
             pcl::fromROSMsg(*msg, *pointCloud);
-            
-            //pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZI>);
-
-            RCLCPP_INFO(this->get_logger(), "Size before filtering %d", pointCloud->width * pointCloud->height);
 
             //perform filtering
             pass.setInputCloud(pointCloud);
             pass.filter(*cloud_filtered);
 
-            RCLCPP_INFO(this->get_logger(), "Size after filtering %d", cloud_filtered->width * cloud_filtered->height);
-            
-
             //publish point filtered point cloud data to a new topic
             pcl::toROSMsg(*cloud_filtered, cloud_filtered_ROS);
-
             publisher_->publish(cloud_filtered_ROS);
             
         }

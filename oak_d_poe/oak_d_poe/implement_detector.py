@@ -105,8 +105,10 @@ class DetectionPublisher(Node):
 
         # define timer, this will act as a while loop checking if the queue's have received a new frame
         timer_period = 0.1  # seconds
-
         self.timer = self.create_timer(timer_period, self.timer_callback)
+        
+        self.get_logger().info('Oak-D publishing images to detection_image')
+        self.get_logger().info('Oak-D publishing detections to detection_label')
 
           
 
@@ -144,7 +146,6 @@ class DetectionPublisher(Node):
             detections = inDet.detections
 
         if frame is not None:
-            self.get_logger().info('Publishing: video frame')
             frame = self.displayFrame("rgb", frame, detections)
             self.publisher1_.publish(self.br.cv2_to_imgmsg(frame))
             for detection in detections:

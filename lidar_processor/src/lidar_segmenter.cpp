@@ -53,24 +53,20 @@ class LidarSegmenter : public rclcpp::Node
             coefficients = boost::make_shared<pcl::ModelCoefficients>();
             inliers = boost::make_shared<pcl::PointIndices>();
 
+            //send info to the logger
+            RCLCPP_INFO(this->get_logger(), "Segmenting from concatenated/filtered and publishing to filtered/segmented");
+            RCLCPP_INFO(this->get_logger(), "Publishing hitch angle to hitch_angle");
+
         }
 
     private:
         //function to receive point cloud data and convert to pcl format, display it
         void filterPCD(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
         {   
-            //send info to logger
-            RCLCPP_INFO(this->get_logger(), "PointCloud Received");
-
-            //initialize point cloud pointer
-            //pcl::PointCloud<pcl::PointXYZI>::Ptr pointCloud = 
-            //    boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>();
+            
             //convert from ros message to pcl point cloud
             pcl::fromROSMsg(*msg, *pointCloud);
             
-            //perform segmentation
-            //pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
-            //pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
 
             //try to segment a plane
             seg.setInputCloud(pointCloud);
@@ -79,15 +75,10 @@ class LidarSegmenter : public rclcpp::Node
             //if no plane is found
             if(inliers->indices.size() == 0)
             {
-                //note no plane was found
-                RCLCPP_INFO(this->get_logger(), "No plane found");
 
             }
             else
             {
-            //note the plane found
-            RCLCPP_INFO(this->get_logger(), "Size of plane segmented: %d", inliers->indices.size());
-            RCLCPP_INFO(this->get_logger(), "Plane equation found: %fx + %fy + %fz + %f = 0", coefficients->values[0], coefficients->values[1], coefficients->values[2], coefficients->values[3]);
 
             //extract the plane for segmentation
             extract.setInputCloud(pointCloud);
@@ -101,10 +92,8 @@ class LidarSegmenter : public rclcpp::Node
             //publish the segmented plane
             publisher1_->publish(cloudSegROS);
 
-            //calculate hitch angle using the normal vector of the plane (x-z plane)
+            //calculate hitch angle using the normal vector of the plane (x-z plane) (yaw)
             theta.data = acos(coefficients->values[0]/sqrt(pow((coefficients->values[0]), 2) + pow((coefficients->values[2]), 2))) * (180/3.14159);
-
-            //RCLCPP_INFO(this->get_logger(), "Hitch Angle Found: %f", theta.data);
 
             //publish the hitch angle
             publisher2_->publish(theta);
