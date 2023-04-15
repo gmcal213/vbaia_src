@@ -80,14 +80,14 @@ class DetectionPublisher(Node):
         self.publisher2_ = self.create_publisher(String, 'detection_label', 10)
 
         # parse config
-        configPath = Path(str(Path.cwd()) + '/src/oak_d_poe/resource/best.json')
+        configPath = Path(str(Path.cwd()) + '/src/oak_d_poe/resource/best1.json')
 
         with configPath.open() as f:
             config = json.load(f)
         nnConfig = config.get("nn_config", {})
 
         # get model path
-        nnPath = str(Path.cwd()) + '/src/oak_d_poe/resource/best_openvino_2022.1_6shave.blob'
+        nnPath = str(Path.cwd()) + '/src/oak_d_poe/resource/best1_openvino_2022.1_6shave.blob'
 
         # parse labels
         nnMappings = config.get("mappings", {})

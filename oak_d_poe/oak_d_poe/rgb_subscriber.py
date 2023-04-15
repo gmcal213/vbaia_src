@@ -21,9 +21,10 @@ class ImageSubscriber(Node):
 
         self.br = CvBridge()
 
+        self.get_logger().info('Publishing video frames from detection_image')
+
     def listener_callback(self, data):
 
-        self.get_logger().info('Receiving video frame')
 
         current_frame = self.br.imgmsg_to_cv2(data)
 

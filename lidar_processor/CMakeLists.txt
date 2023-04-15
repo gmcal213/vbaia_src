@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED)
 
@@ -42,7 +43,7 @@ ament_target_dependencies(lidarconcat_node rclcpp sensor_msgs pcl_conversions)
 target_link_libraries(lidarconcat_node ${PCL_LIBRARIES})
 
 add_executable(lidarseg_node src/lidar_segmenter.cpp)
-ament_target_dependencies(lidarseg_node rclcpp sensor_msgs pcl_conversions)
+ament_target_dependencies(lidarseg_node rclcpp sensor_msgs geometry_msgs pcl_conversions)
 target_link_libraries(lidarseg_node ${PCL_LIBRARIES})
 
 add_executable(lidarstats_node src/lidar_stats.cpp)
